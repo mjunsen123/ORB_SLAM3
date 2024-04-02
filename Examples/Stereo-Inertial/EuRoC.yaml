@@ -112,3 +112,8 @@ Viewer.ViewpointZ: -1.8
 Viewer.ViewpointF: 500.0
 Viewer.imageViewScale: 1.0
 
+#--------------------------------------------------------------------------------------------
+# ADDED 20240402 - Save Map
+#--------------------------------------------------------------------------------------------
+System.LoadAtlasToFile: "stereo_map" # Comment this line for first run
+System.SaveAtlasToFile: "stereo_map"

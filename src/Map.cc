@@ -356,10 +356,86 @@ void Map::SetLastMapChange(int currentChangeId)
     mnMapChangeNotified = currentChangeId;
 }
 
+// void Map::PreSave(std::set<GeometricCamera*> &spCams)
+// {
+//     int nMPWithoutObs = 0;
+//     for(MapPoint* pMPi : mspMapPoints)
+//     {
+//         if(!pMPi || pMPi->isBad())
+//             continue;
+
+//         if(pMPi->GetObservations().size() == 0)
+//         {
+//             nMPWithoutObs++;
+//         }
+//         map<KeyFrame*, std::tuple<int,int>> mpObs = pMPi->GetObservations();
+//         for(map<KeyFrame*, std::tuple<int,int>>::iterator it= mpObs.begin(), end=mpObs.end(); it!=end; ++it)
+//         {
+//             if(it->first->GetMap() != this || it->first->isBad())
+//             {
+//                 pMPi->EraseObservation(it->first);
+//             }
+
+//         }
+//     }
+
+//     // Saves the id of KF origins
+//     mvBackupKeyFrameOriginsId.clear();
+//     mvBackupKeyFrameOriginsId.reserve(mvpKeyFrameOrigins.size());
+//     for(int i = 0, numEl = mvpKeyFrameOrigins.size(); i < numEl; ++i)
+//     {
+//         mvBackupKeyFrameOriginsId.push_back(mvpKeyFrameOrigins[i]->mnId);
+//     }
+
+
+//     // Backup of MapPoints
+//     mvpBackupMapPoints.clear();
+//     for(MapPoint* pMPi : mspMapPoints)
+//     {
+//         if(!pMPi || pMPi->isBad())
+//             continue;
+
+//         mvpBackupMapPoints.push_back(pMPi);
+//         pMPi->PreSave(mspKeyFrames,mspMapPoints);
+//     }
+
+//     // Backup of KeyFrames
+//     mvpBackupKeyFrames.clear();
+//     for(KeyFrame* pKFi : mspKeyFrames)
+//     {
+//         if(!pKFi || pKFi->isBad())
+//             continue;
+
+//         mvpBackupKeyFrames.push_back(pKFi);
+//         pKFi->PreSave(mspKeyFrames,mspMapPoints, spCams);
+//     }
+
+//     mnBackupKFinitialID = -1;
+//     if(mpKFinitial)
+//     {
+//         mnBackupKFinitialID = mpKFinitial->mnId;
+//     }
+
+//     mnBackupKFlowerID = -1;
+//     if(mpKFlowerID)
+//     {
+//         mnBackupKFlowerID = mpKFlowerID->mnId;
+//     }
+
+// }
+
+// ---------------------------------------------------------------------------
+// To deal with segmentation issue, suggested by :
+// https://github.com/UZ-SLAMLab/ORB_SLAM3/issues/443#issuecomment-1154814254
+// ---------------------------------------------------------------------------  
 void Map::PreSave(std::set<GeometricCamera*> &spCams)
 {
     int nMPWithoutObs = 0;
-    for(MapPoint* pMPi : mspMapPoints)
+
+    std::set<MapPoint*> tmp_mspMapPoints1;
+    tmp_mspMapPoints1.insert(mspMapPoints.begin(), mspMapPoints.end());
+
+    for(MapPoint* pMPi : tmp_mspMapPoints1)
     {
         if(!pMPi || pMPi->isBad())
             continue;
@@ -374,6 +450,8 @@ void Map::PreSave(std::set<GeometricCamera*> &spCams)
             if(it->first->GetMap() != this || it->first->isBad())
             {
                 pMPi->EraseObservation(it->first);
+                // As suggested by https://github.com/UZ-SLAMLab/ORB_SLAM3/pull/798#issuecomment-1793482506
+                std::cout << "\tmspMapPoints.size(): " << mspMapPoints.size() << endl;
             }
 
         }
@@ -390,7 +468,11 @@ void Map::PreSave(std::set<GeometricCamera*> &spCams)
 
     // Backup of MapPoints
     mvpBackupMapPoints.clear();
-    for(MapPoint* pMPi : mspMapPoints)
+
+    std::set<MapPoint*> tmp_mspMapPoints2;
+    tmp_mspMapPoints2.insert(mspMapPoints.begin(), mspMapPoints.end());
+
+    for(MapPoint* pMPi : tmp_mspMapPoints2)
     {
         if(!pMPi || pMPi->isBad())
             continue;
