@@ -33,6 +33,11 @@
 #include <boost/archive/xml_iarchive.hpp>
 #include <boost/archive/xml_oarchive.hpp>
 
+// ==================================================================================
+// Trying code from https://github.com/dz306271098/ORB_SLAM3/blob/master/src/System.cc#L587
+// ==================================================================================
+#include "opencv2/core/eigen.hpp"
+
 namespace ORB_SLAM3
 {
 
@@ -169,7 +174,7 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
         loadedAtlas = true;
 
         // ==================================================================================
-        // Replace map code as suggested by:
+        // Replace map code as suggested by: (Inactive)
         // https://github.com/UZ-SLAMLab/ORB_SLAM3/issues/805#issuecomment-1784359880
         // ==================================================================================
         // mpAtlas->ChangeMap(mpAtlas->GetAllMaps()[0]);
@@ -246,7 +251,11 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
 
 }
 
-Sophus::SE3f System::TrackStereo(const cv::Mat &imLeft, const cv::Mat &imRight, const double &timestamp, const vector<IMU::Point>& vImuMeas, string filename)
+// ==================================================================================
+// Trying code from https://github.com/dz306271098/ORB_SLAM3/blob/master/src/System.cc#L587
+// ==================================================================================
+cv::Mat System::TrackStereo(const cv::Mat &imLeft, const cv::Mat &imRight, const double &timestamp, const vector<IMU::Point>& vImuMeas, string filename)
+// Sophus::SE3f System::TrackStereo(const cv::Mat &imLeft, const cv::Mat &imRight, const double &timestamp, const vector<IMU::Point>& vImuMeas, string filename)
 {
     if(mSensor!=STEREO && mSensor!=IMU_STEREO)
     {
@@ -320,6 +329,32 @@ Sophus::SE3f System::TrackStereo(const cv::Mat &imLeft, const cv::Mat &imRight, 
     // std::cout << "start GrabImageStereo" << std::endl;
     Sophus::SE3f Tcw = mpTracker->GrabImageStereo(imLeftToFeed,imRightToFeed,timestamp,filename);
 
+    // ==================================================================================
+    // Trying code from https://github.com/dz306271098/ORB_SLAM3/blob/master/src/System.cc#L587
+    // ==================================================================================
+    Eigen::Matrix4f test_eig = Tcw.matrix();
+    cv::Mat tmp_Data = cv::Mat::zeros(7,4,CV_32F);
+    if (!test_eig.isIdentity() && (mpAtlas->GetCurrentMap()->GetIniertialBA1() || mSensor == System::STEREO) )
+    {
+        IMU::Bias tmp_bias = mpTracker->mCurrentFrame.mImuBias;
+        cv::Mat tmp_cv_mat0 = cv::Mat(4, 4, CV_32F);
+        cv::Mat tmp_cv_mat = cv::Mat(3, 1, CV_32F);
+        cv::eigen2cv((Tcw.inverse()).matrix(), tmp_cv_mat0);
+        tmp_cv_mat0.copyTo(tmp_Data.rowRange(0, 4).colRange(0, 4));
+        cv::eigen2cv(mpTracker->mCurrentFrame.GetVelocity(), tmp_cv_mat);
+        tmp_cv_mat = tmp_cv_mat.t();
+        tmp_cv_mat.copyTo(tmp_Data.row(4).colRange(0, 3));
+
+        tmp_Data.at<float>(5, 0) = tmp_bias.bax;
+        tmp_Data.at<float>(5, 1) = tmp_bias.bay;
+        tmp_Data.at<float>(5, 2) = tmp_bias.baz;
+        tmp_Data.at<float>(6, 0) = tmp_bias.bwx;
+        tmp_Data.at<float>(6, 1) = tmp_bias.bwy;
+        tmp_Data.at<float>(6, 2) = tmp_bias.bwz;
+    }
+    else
+        tmp_Data.release();
+
     // std::cout << "out grabber" << std::endl;
 
     unique_lock<mutex> lock2(mMutexState);
@@ -327,7 +362,11 @@ Sophus::SE3f System::TrackStereo(const cv::Mat &imLeft, const cv::Mat &imRight, 
     mTrackedMapPoints = mpTracker->mCurrentFrame.mvpMapPoints;
     mTrackedKeyPointsUn = mpTracker->mCurrentFrame.mvKeysUn;
 
-    return Tcw;
+    // ==================================================================================
+    // Trying code from https://github.com/dz306271098/ORB_SLAM3/blob/master/src/System.cc#L587
+    // ==================================================================================
+    return tmp_Data.clone();
+    // return Tcw;
 }
 
 Sophus::SE3f System::TrackRGBD(const cv::Mat &im, const cv::Mat &depthmap, const double &timestamp, const vector<IMU::Point>& vImuMeas, string filename)
@@ -652,8 +691,8 @@ void System::Shutdown()
         SaveAtlas(FileType::BINARY_FILE);
     }
 
-    if(mpViewer)
-        pangolin::BindToContext("ORB-SLAM3: Map Viewer");
+    // if(mpViewer)
+    //     pangolin::BindToContext("ORB-SLAM3: Map Viewer");
 
 #ifdef REGISTER_TIMES
     mpTracker->PrintTimeStats();

@@ -235,10 +235,10 @@ void MapPoint::SetBadFlag()
         }
     }
     // ==================================================================================
-    // Remove this as suggested by 
+    // Remove this as suggested by (Inactive)
     // https://github.com/UZ-SLAMLab/ORB_SLAM3/issues/443#issuecomment-1063870571
     // ==================================================================================
-    mpMap->EraseMapPoint(this);
+    // mpMap->EraseMapPoint(this);
 }
 
 MapPoint* MapPoint::GetReplaced()
