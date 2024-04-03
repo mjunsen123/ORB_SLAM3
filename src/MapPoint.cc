@@ -234,7 +234,10 @@ void MapPoint::SetBadFlag()
             pKF->EraseMapPointMatch(rightIndex);
         }
     }
-
+    // ==================================================================================
+    // Remove this as suggested by 
+    // https://github.com/UZ-SLAMLab/ORB_SLAM3/issues/443#issuecomment-1063870571
+    // ==================================================================================
     mpMap->EraseMapPoint(this);
 }
 

@@ -451,7 +451,7 @@ void Map::PreSave(std::set<GeometricCamera*> &spCams)
             {
                 pMPi->EraseObservation(it->first);
                 // As suggested by https://github.com/UZ-SLAMLab/ORB_SLAM3/pull/798#issuecomment-1793482506
-                std::cout << "\tmspMapPoints.size(): " << mspMapPoints.size() << endl;
+                // std::cout << "\tmspMapPoints.size(): " << mspMapPoints.size() << endl;
             }
 
         }

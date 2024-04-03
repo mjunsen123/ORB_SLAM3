@@ -168,6 +168,11 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
 
         loadedAtlas = true;
 
+        // ==================================================================================
+        // Replace map code as suggested by:
+        // https://github.com/UZ-SLAMLab/ORB_SLAM3/issues/805#issuecomment-1784359880
+        // ==================================================================================
+        // mpAtlas->ChangeMap(mpAtlas->GetAllMaps()[0]);
         mpAtlas->CreateNewMap();
 
         //clock_t timeElapsed = clock() - start;
@@ -512,6 +517,71 @@ void System::ResetActiveMap()
     mbResetActiveMap = true;
 }
 
+// void System::Shutdown()
+// {
+//     {
+//         unique_lock<mutex> lock(mMutexReset);
+//         mbShutDown = true;
+//     }
+
+//     cout << "Shutdown" << endl;
+
+//     mpLocalMapper->RequestFinish();
+//     mpLoopCloser->RequestFinish();
+
+//     // ----------------------------------------------------------------
+//     // Uncomment below section to deal with segmentation issue, suggested in :
+//     // https://github.com/UZ-SLAMLab/ORB_SLAM3/issues/452
+//     // ----------------------------------------------------------------
+
+//     if(mpViewer)
+//     {
+//         mpViewer->RequestFinish();
+//         while(!mpViewer->isFinished())
+//             usleep(5000);
+//     }
+
+//     // Wait until all thread have effectively stopped
+//     while(!mpLocalMapper->isFinished() || !mpLoopCloser->isFinished() || mpLoopCloser->isRunningGBA())
+//     {
+//         if(!mpLocalMapper->isFinished())
+//             cout << "mpLocalMapper is not finished" << endl;
+//         if(!mpLoopCloser->isFinished())
+//             cout << "mpLoopCloser is not finished" << endl;
+//         if(mpLoopCloser->isRunningGBA()){
+//             cout << "mpLoopCloser is running GBA" << endl;
+//             cout << "break anyway..." << endl;
+//             break;
+//         }
+//         usleep(5000);
+//     }
+
+//     if(!mStrSaveAtlasToFile.empty())
+//     {
+//         Verbose::PrintMess("Atlas saving to file " + mStrSaveAtlasToFile, Verbose::VERBOSITY_NORMAL);
+//         SaveAtlas(FileType::BINARY_FILE);
+//     }
+
+//     // ----------------------------------------------------------------
+//     // Uncomment below section to deal with segmentation issue, suggested in :
+//     // https://github.com/UZ-SLAMLab/ORB_SLAM3/issues/452
+//     // ----------------------------------------------------------------
+
+//     if(mpViewer)
+//         pangolin::BindToContext("ORB-SLAM3: Map Viewer");
+        
+
+// #ifdef REGISTER_TIMES
+//     mpTracker->PrintTimeStats();
+// #endif
+
+// }
+
+// ----------------------------------------------------------------
+// To deal with segmentation issue, adapted solution by :
+// https://github.com/dz306271098/ORB_SLAM3/blob/master/src/System.cc
+// ----------------------------------------------------------------
+
 void System::Shutdown()
 {
     {
@@ -521,43 +591,43 @@ void System::Shutdown()
 
     cout << "Shutdown" << endl;
 
-    mpLocalMapper->RequestFinish();
-    mpLoopCloser->RequestFinish();
-
-    // ----------------------------------------------------------------
-    // To deal with segmentation issue, suggested by :
-    // https://github.com/UZ-SLAMLab/ORB_SLAM3/issues/452
-    // ----------------------------------------------------------------
-    if (mpViewer)
+    while (mpLoopCloser->isRunningGBA())
     {
-        mpViewer->RequestFinish();
-        while (!mpViewer->isFinished())
-            usleep(5000);
-    }
-
-    // Wait until all thread have effectively stopped
-    while (!mpLocalMapper->isFinished() || !mpLoopCloser->isFinished() || mpLoopCloser->isRunningGBA())
-    {
-        if (!mpLocalMapper->isFinished())
-            cout << "mpLocalMapper is not finished" << endl;
-        if (!mpLoopCloser->isFinished())
-            cout << "mpLoopCloser is not finished" << endl;
-        if (mpLoopCloser->isRunningGBA())
+        if(mpLoopCloser->isRunningGBA())
         {
-            cout << "mpLoopCloser is running GBA" << endl;
-            cout << "break anyway..." << endl;
-            break;
+            cout << "mpLoopCloser is running GBA, wait~~~~" << endl;\
+            usleep(1000000);
         }
-        usleep(5000);
     }
 
-    /*if(mpViewer)
+    if(mpViewer)
     {
-        mpViewer->RequestFinish();
+        int wait_limit = 0;
         while(!mpViewer->isFinished())
-            usleep(5000);
-    }*/
+        {
+            wait_limit++;
+            if (wait_limit > 10)
+                break;
+            mpViewer->RequestFinish();
+            usleep(1000000);
+            cout << "mpViewer is not finished" << endl;
+        }
+    }
 
+    int wait_limit = 0;
+    while( !mpLocalMapper->isFinished() || !mpLoopCloser->isFinished() )
+    {
+        mpLocalMapper->RequestFinish();
+        mpLoopCloser->RequestFinish();
+        if(!mpLocalMapper->isFinished() || !mpLoopCloser->isFinished())
+        {
+            wait_limit++;
+            if (wait_limit > 10)
+                break;
+            usleep(1000000);
+            cout << "mpLocalMapper or mpLoopCloser is not finished" << endl;
+        }
+    }
     // Wait until all thread have effectively stopped
     /*while(!mpLocalMapper->isFinished() || !mpLoopCloser->isFinished() || mpLoopCloser->isRunningGBA())
     {
@@ -573,14 +643,17 @@ void System::Shutdown()
         /*usleep(5000);
     }*/
 
+    std::cout << "just wait for 10 seconds" << std::endl;
+    usleep(10000000);
+
     if(!mStrSaveAtlasToFile.empty())
     {
         Verbose::PrintMess("Atlas saving to file " + mStrSaveAtlasToFile, Verbose::VERBOSITY_NORMAL);
         SaveAtlas(FileType::BINARY_FILE);
     }
 
-    /*if(mpViewer)
-        pangolin::BindToContext("ORB-SLAM2: Map Viewer");*/
+    if(mpViewer)
+        pangolin::BindToContext("ORB-SLAM3: Map Viewer");
 
 #ifdef REGISTER_TIMES
     mpTracker->PrintTimeStats();
