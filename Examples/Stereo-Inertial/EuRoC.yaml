@@ -15,8 +15,8 @@
 #--------------------------------------------------------------------------------------------
 # ADDED 20240402 - Save Map
 #--------------------------------------------------------------------------------------------
-System.LoadAtlasFromFile: "stereo_map" # Comment this line for first run
-System.SaveAtlasToFile: "stereo_map"
+System.LoadAtlasFromFile: "stereo_mapV1" # Comment this line for first run
+# System.SaveAtlasToFile: "stereo_mapV1"
 
 #--------------------------------------------------------------------------------------------
 # Camera Parameters. Adjust them!
@@ -29,7 +29,7 @@ Camera.type: "PinHole"
 Camera1.fx: 458.654
 Camera1.fy: 457.296
 Camera1.cx: 367.215
-Camera1.cy: 248.375
+Camera1.cy: 248.375   
 
 Camera1.k1: -0.28340811
 Camera1.k2: 0.07395907

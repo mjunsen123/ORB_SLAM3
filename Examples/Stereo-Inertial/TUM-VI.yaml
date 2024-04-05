@@ -3,8 +3,8 @@
 #--------------------------------------------------------------------------------------------
 # ADDED 20240402 - Save Map
 #--------------------------------------------------------------------------------------------
-# System.LoadAtlasFromFile: "stereo_map_tum" # Comment this line for first run
-System.SaveAtlasToFile: "stereo_map_tum"
+System.LoadAtlasFromFile: "stereo_map_tum" # Comment this line for first run
+# System.SaveAtlasToFile: "stereo_map_tum"
 
 #--------------------------------------------------------------------------------------------
 # Camera Parameters. Adjust them!
