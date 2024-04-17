@@ -68,6 +68,10 @@
         "variant": "cpp",
         "semaphore": "cpp",
         "__nullptr": "cpp",
-        "__tuple": "cpp"
+        "__tuple": "cpp",
+        "shared_mutex": "cpp",
+        "__mutex_base": "cpp",
+        "filesystem": "cpp",
+        "*.ipp": "cpp"
     }
 }

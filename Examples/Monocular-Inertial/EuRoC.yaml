@@ -3,7 +3,7 @@
 #--------------------------------------------------------------------------------------------
 # ADDED 20240402 - Save Map
 #--------------------------------------------------------------------------------------------
-System.LoadAtlasFromFile: "mono_map" # Comment this line for first run
+# System.LoadAtlasFromFile: "mono_map" # Comment this line for first run
 System.SaveAtlasToFile: "mono_map"
 
 #--------------------------------------------------------------------------------------------

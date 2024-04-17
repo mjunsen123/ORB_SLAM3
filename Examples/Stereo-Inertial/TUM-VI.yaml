@@ -3,7 +3,7 @@
 #--------------------------------------------------------------------------------------------
 # ADDED 20240402 - Save Map
 #--------------------------------------------------------------------------------------------
-System.LoadAtlasFromFile: "stereo_map_tum" # Comment this line for first run
+# System.LoadAtlasFromFile: "stereo_map_tum" # Comment this line for first run
 # System.SaveAtlasToFile: "stereo_map_tum"
 
 #--------------------------------------------------------------------------------------------
@@ -55,8 +55,8 @@ Camera2.overlappingBegin: 0
 Camera2.overlappingEnd: 511
 
 # Camera resolution
-Camera.width: 512
-Camera.height: 512
+Camera.width: 600
+Camera.height: 350
 
 # Camera frames per second 
 Camera.fps: 20

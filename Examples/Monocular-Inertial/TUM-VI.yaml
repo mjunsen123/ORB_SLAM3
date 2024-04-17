@@ -4,7 +4,7 @@
 # ADDED 20240402 - Save Map
 #--------------------------------------------------------------------------------------------
 # System.LoadAtlasFromFile: "mono_map_tum" # Comment this line for first run
-System.SaveAtlasToFile: "mono_map_tum"
+# System.SaveAtlasToFile: "mono_map_tum"
 
 #--------------------------------------------------------------------------------------------
 # Camera Parameters. Adjust them!

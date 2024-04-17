@@ -35,6 +35,23 @@ elif [[ "$1" == "--monoTum" ]]; then
 	./Monocular-Inertial/TUM_TimeStamps/dataset-magistrale1_512.txt \
 	Stereo-Inertial/TUM_IMU/dataset-magistrale1_512.txt \
 	dataset-magistrale1_monoi
+elif [[ "$1" == "--monoTumSlide" ]]; then
+    ./Monocular-Inertial/mono_inertial_tum_vi \
+	../Vocabulary/ORBvoc.txt \
+	./Monocular-Inertial/TUM-VI.yaml \
+	/home/jyee/dataset/dataset-slides1_512_16/mav0/cam0/data \
+	./Monocular-Inertial/TUM_TimeStamps/dataset-slides1_512.txt \
+	Stereo-Inertial/TUM_IMU/dataset-slides1_512.txt \
+	dataset-slides1_monoi
+elif [[ "$1" == "--stereoTumSlide" ]]; then
+    ./Stereo-Inertial/stereo_inertial_tum_vi \
+	../Vocabulary/ORBvoc.txt \
+	./Stereo-Inertial/TUM-VI.yaml \
+	/home/jyee/dataset/dataset-slides1_512_16/mav0/cam0/data \
+	/home/jyee/dataset/dataset-slides1_512_16/mav0/cam1/data \
+	./Stereo-Inertial/TUM_TimeStamps/dataset-slides1_512.txt \
+	Stereo-Inertial/TUM_IMU/dataset-slides1_512.txt \
+	dataset-slides1_stereoi
 else
     echo "Invalid argument. Please use --stereoEuroc, --monoEuroc, --stereoTum or --monoTum."
 fi
