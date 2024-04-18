@@ -93,3 +93,5 @@ borrar/*
 */ExecMean.txt
 .vscode/tasks.json
 .vscode/settings.json
+
+python/*
