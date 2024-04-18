@@ -237,7 +237,12 @@ void LoopClosing::Run()
 
                         Eigen::Vector3d phi = LogSO3(g2oSww_new.rotation().toRotationMatrix());
                         cout << "phi = " << phi.transpose() << endl; 
-                        if (fabs(phi(0))<0.008f && fabs(phi(1))<0.008f && fabs(phi(2))<0.349f)
+                        // ===========================================================================
+                        // https://github.com/dz306271098/ORB_SLAM3/blob/master/src/LoopClosing.cc
+                        // Try to increase loop closure tolerance threshold
+                        // ===========================================================================
+                        // if (fabs(phi(0))<0.008f && fabs(phi(1))<0.008f && fabs(phi(2))<0.349f)
+                        if (fabs(phi(0))<0.045f && fabs(phi(1))<0.045f && fabs(phi(2))<0.349f)
                         {
                             if(mpCurrentKF->GetMap()->IsInertial())
                             {
